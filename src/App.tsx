@@ -5,6 +5,8 @@ import FormatSelector from './components/FormatSelector';
 import BookTable from './components/BookTable';
 import BookModal from './components/BookModal';
 import BookForm from './components/BookForm';
+import BookDetailModal from './components/BookDetailModal';
+import Toast from './components/Toast';
 
 export default function App() {
   const [books,   setBooks]   = useState<Book[]>([]);
@@ -13,7 +15,13 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [error,   setError]   = useState<string | null>(null);
 
-  // Modal state
+  // Detail modal state
+  const [detailBook, setDetailBook] = useState<Book | null>(null);
+
+  // Toast state
+  const [toast, setToast] = useState<string | null>(null);
+
+  // Edit/add modal state
   const [modalOpen,   setModalOpen]   = useState(false);
   const [editingBook, setEditingBook] = useState<Book | null>(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -61,8 +69,10 @@ export default function App() {
     try {
       if (data.id !== undefined) {
         await updateBook(data as Book, format);
+        setToast(`"${data.title}" by ${data.author} updated successfully.`);
       } else {
         await createBook(data, format);
+        setToast(`"${data.title}" by ${data.author} added successfully.`);
       }
       closeModal();
       fetchBooks(query, format);
@@ -79,6 +89,7 @@ export default function App() {
     setError(null);
     try {
       await deleteBook(book.id, format);
+      setToast(`"${book.title}" by ${book.author} deleted.`);
       fetchBooks(query, format);
     } catch (err: unknown) {
       const msg = (err as { response?: { data?: string } })?.response?.data;
@@ -90,13 +101,13 @@ export default function App() {
     <div className="min-h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-indigo-700 text-white shadow">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div className="max-w-screen-2xl mx-auto px-6 py-4 flex items-center justify-between">
           <h1 className="text-2xl font-bold tracking-tight">Book Library</h1>
           <FormatSelector value={format} onChange={setFormat} />
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
+      <main className="max-w-screen-2xl mx-auto px-6 py-8 space-y-6">
         {/* Search + Add row */}
         <div className="flex items-center gap-4">
           <input
@@ -125,9 +136,20 @@ export default function App() {
         {loading ? (
           <p className="text-center text-gray-500 py-12">Loading…</p>
         ) : (
-          <BookTable books={books} onEdit={openEdit} onDelete={handleDelete} />
+          <BookTable books={books} onEdit={openEdit} onDelete={handleDelete} onRowClick={setDetailBook} />
         )}
       </main>
+
+      {/* Detail modal */}
+      <BookDetailModal
+        book={detailBook}
+        onClose={() => setDetailBook(null)}
+        onEdit={(book) => { setDetailBook(null); openEdit(book); }}
+        onDelete={(book) => { setDetailBook(null); handleDelete(book); }}
+      />
+
+      {/* Success toast */}
+      <Toast message={toast} onDismiss={() => setToast(null)} />
 
       {/* Add / Edit modal */}
       <BookModal open={modalOpen} onClose={closeModal}>
