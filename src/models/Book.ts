@@ -1,8 +1,12 @@
+/*
+The models/Book.ts file defines the TypeScript interfaces and constants related to the Book data model.
+*/
+
 export interface Book {
   id: number;
   title: string;
   author: string;
-  date: string;       // DD/MM/YYYY
+  date: string;       // Format DD/MM/YYYY
   genres: string;
   characters: string;
   synopsis: string;
