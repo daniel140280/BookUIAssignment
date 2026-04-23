@@ -96,23 +96,6 @@ export default function App() {
       setFormLoading(false);
     }
   }
-
-
-  // REMOVE This function is called when a user confirms they want to delete a book. 
-  // It validates a book exists, then calls the deleteBook API function. A If successful, a brief success toast message is shown and book library refreshed.
-  // async function handleDelete(book: Book) {
-  //   if (!window.confirm(`Delete "${book.title}"?`)) return;
-  //   setError(null);
-  //   try {
-  //     await deleteBook(book.id, format);
-  //     setToast(`"${book.title}" by ${book.author} deleted.`);
-  //     fetchBooks(query, format);
-  //   } catch (err: unknown) {
-  //     const msg = (err as { response?: { data?: string } })?.response?.data;
-  //     setError(msg ?? 'Failed to delete book.');
-  //   }
-  // }
-
   
   // If an error occurs during deletion, an error message is displayed in the UI.
   async function handleDeleteConfirmed() {
